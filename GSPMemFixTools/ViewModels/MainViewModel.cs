@@ -178,7 +178,7 @@ namespace GSPMemFixTools.ViewModels
                     //using Microsoft.Practices.ServiceLocation;
                     content.Insert(0,"using Microsoft.Practices.ServiceLocation;");
 
-                    File.WriteAllLines(file, content.ToArray());
+                    File.WriteAllLines(file, content.ToArray(), Encoding.UTF8);
                 }
             }
         }
@@ -195,17 +195,19 @@ namespace GSPMemFixTools.ViewModels
                 lineIndex++;
                 var rowData = data[lineIndex];
                 var rowValues = rowData.Split(' ');
-                var className = rowValues.FirstOrDefault(x => x.StartsWith("I") && x.EndsWith("Service"));
-                if (className != null)
-                {
-                    className = className.Substring(1);
-                    data[lineIndex] = String.Format("\t\tpublic I{0} {1} {{ get {{ return ServiceLocator.Current.GetInstance<I{2}>(); }} }}", className, className, className);  
+                var interfaceName = rowValues.FirstOrDefault(x => x.StartsWith("I") && x.EndsWith("Service"));
+                if (interfaceName != null)
+                {                                        
+                    var name = rowValues.FirstOrDefault(x => !x.StartsWith("I") && x.EndsWith("Service"));
+                    if (name == null)
+                        name = interfaceName.Substring(1); // Use interface name instead
+                    data[lineIndex] = String.Format("\t\tpublic {0} {1} {{ get {{ return ServiceLocator.Current.GetInstance<{2}>(); }} }}", interfaceName, name, interfaceName);  
                     _tempList.Add(String.Format("\tAdded: {0}", data[lineIndex]));
                     return true;
                 }
                 else
                 {
-                    Debug.Assert(className == null);
+                    Debug.Assert(interfaceName == null);
                     return false;
                 }                
             }
