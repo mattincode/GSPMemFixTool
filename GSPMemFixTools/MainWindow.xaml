@@ -20,7 +20,7 @@
             <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" FontSize="12" FontWeight="Bold"  Text="1. Create IOC for app.xaml.cs" Margin="5,5,0,10"/>            
             <TextBlock Grid.Row="1" Grid.Column="0"  Text="{Binding InterfacePath}" Margin="5,0,5,5"/>
             <Button x:Name="BrowseInterfaceFolderButton"  Grid.Row="1" Grid.Column="1"  Content="..." Click="BrowseInterfaceFolderButton_Click" Margin="0,5,5,5" Width="20"/>
-            <Button x:Name="ReadServiceInterfacesButton" IsEnabled="{Binding InterfaceFolderOK}"  Grid.Row="1" Grid.Column="2" Content="Read Service Interfaces" Click="ReadServiceInterfacesButton_Click" Width="150" HorizontalAlignment="Right" Margin="0,0,150,0"/>
+            <Button x:Name="ReadServiceInterfacesButton" IsEnabled="{Binding InterfaceFolderOK}"  Grid.Row="1" Grid.Column="2" Content="Read Service Interfaces" Click="ReadServiceInterfacesButton_Click" Width="160" HorizontalAlignment="Left" Margin="0,0,5,0"/>
             <ListBox Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"  ItemsSource="{Binding InterfaceList}" Margin="5"/>
         </Grid>
 
@@ -40,7 +40,7 @@
             <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" FontSize="12" FontWeight="Bold"  Text="2. Search and replace importstatements" Margin="5,5,0,10"/>
             <TextBlock Grid.Row="1" Grid.Column="0"  Text="{Binding RiaClientPath}" Margin="5,0,5,5"/>
             <Button x:Name="BrowseRiaClientFolderButton"  Grid.Row="1" Grid.Column="1"  Content="..." Click="BrowseRiaClientFolderButton_Click" Margin="0,5,5,5" Width="20"/>
-            <Button x:Name="ReplaceImportButton" IsEnabled="{Binding RiaClientFolderOK}"  Grid.Row="1" Grid.Column="2" Content="Replace imports" Click="ReplaceImportButton_Click" Width="150" HorizontalAlignment="Right" Margin="0,0,150,0"/>
+            <Button x:Name="ReplaceImportButton" IsEnabled="{Binding RiaClientFolderOK}"  Grid.Row="1" Grid.Column="2" Content="Replace imports" Click="ReplaceImportButton_Click" Width="160" HorizontalAlignment="Left" Margin="0,0,5,0"/>
             <ListBox Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"  ItemsSource="{Binding ImportList}" Margin="5"/>
         </Grid>
     </StackPanel>

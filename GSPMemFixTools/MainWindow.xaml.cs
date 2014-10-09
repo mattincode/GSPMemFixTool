@@ -16,6 +16,7 @@ using System.Windows.Shapes;
 using System.Windows.Forms;
 using System.IO;
 using System.Diagnostics;
+using GSPMemFixTools.ViewModels;
 
 namespace GSPMemFixTools
 {
@@ -29,7 +30,15 @@ namespace GSPMemFixTools
         {
             InitializeComponent();
             DataContext = _vm;
+            // Init using my local folders for convenience
             _vm.InterfacePath = @"D:\Stratiteq\TFS\Securitas GSP\MemLeak\Securitas.GSP.RiaClient.Contracts";
+            _vm.RiaClientPath = @"C:\Users\Mathias\Documents\Visual Studio 2013\Projects\GSPMemFixTools\GSPMemFixTools\bin\Debug\Test"; // @"D:\Stratiteq\TFS\Securitas GSP\MemLeak\Securitas.GSP.RiaClient";
+        }
+
+        private void BrowseInterfaceFolderButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Open folder browser
+            _vm.InterfacePath = GetFolderFromDialog();
         }
 
         private void ReadServiceInterfacesButton_Click(object sender, RoutedEventArgs e)
@@ -38,80 +47,29 @@ namespace GSPMemFixTools
             _vm.ScanInterfaceFolder();
         }
 
-        private void BrowseInterfaceFolderButton_Click(object sender, RoutedEventArgs e)
+        private void BrowseRiaClientFolderButton_Click(object sender, RoutedEventArgs e)
         {
             // Open folder browser
+            _vm.RiaClientPath = GetFolderFromDialog();
+        }
+
+        private void ReplaceImportButton_Click(object sender, RoutedEventArgs e)
+        {
+            _vm.ReplaceImports();
+        }
+
+        #region Utilties
+        private string GetFolderFromDialog()
+        {
+            var value = String.Empty;
             var dialog = new FolderBrowserDialog();
             dialog.SelectedPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
             if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                _vm.InterfacePath = dialog.SelectedPath;
+                value = dialog.SelectedPath;
             }
+            return value;
         }
-    }
-
-
-    public class MainViewModel : BaseViewModel
-    {
-
-        private ObservableCollection<string> _interfaceList = new ObservableCollection<string>();
-        public ObservableCollection<string> InterfaceList
-        {
-            get { return _interfaceList; }
-            set 
-            { 
-                _interfaceList = value; 
-                RaisePropertyChanged(() => InterfaceList);
-            }
-        }
-
-        private string _InterfacePath;
-        public string InterfacePath
-        {
-            get { return _InterfacePath; }
-            set 
-            { 
-                _InterfacePath = value;
-                InterfaceFolderOK = Directory.Exists(_InterfacePath);
-                RaisePropertyChanged(() => InterfacePath);
-            }
-        }
-
-        private bool _interfaceFolderOk;
-        public bool InterfaceFolderOK
-        {
-            get { return _interfaceFolderOk; }
-            set 
-            { 
-                _interfaceFolderOk = value;
-                RaisePropertyChanged(() => InterfaceFolderOK);
-            }
-        }
-        
-
-        public void ScanInterfaceFolder()
-        {
-            if (_interfaceFolderOk)
-            {
-
-
-                var files = from fullFilename in Directory.EnumerateFiles(_InterfacePath, "I*Service.cs")
-                                select System.IO.Path.GetFileName(fullFilename);
-                var list = new List<string>();
-                foreach (var file in files)
-	            {
-                    // Remove extension
-                    var name = file.TrimEnd('.', 'c', 's');
-                    var implName = name.TrimStart('I');
-                    var ioc = String.Format("SimpleIoc.Default.Register<{0},{1}>();", name, implName);
-                    //SimpleIoc.Default.Register<IPlanningUnitService, PlanningUnitService>();
-                    list.Add(ioc);
-                    Debug.WriteLine(ioc);
-	            }
-                InterfaceList = new ObservableCollection<string>(list);
-            }
-
-        }
-
+        #endregion Utilities
     }
 }
