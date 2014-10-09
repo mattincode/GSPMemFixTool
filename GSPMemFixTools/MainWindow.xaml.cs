@@ -32,7 +32,8 @@ namespace GSPMemFixTools
             DataContext = _vm;
             // Init using my local folders for convenience
             _vm.InterfacePath = @"D:\Stratiteq\TFS\Securitas GSP\MemLeak\Securitas.GSP.RiaClient.Contracts";
-            _vm.RiaClientPath = @"D:\Stratiteq\TFS\Securitas GSP\MemLeak\Securitas.GSP.RiaClient"; 
+            _vm.RiaClientPath = @"D:\Stratiteq\TFS\Securitas GSP\MemLeak\Securitas.GSP.RiaClient";
+            _vm.RiaClientPath = @"D:\Stratiteq\TFS\Securitas GSP\MemLeak\Securitas.GSP.RiaClient.Framework"; 
             //_vm.RiaClientPath = @"C:\Users\Mathias\Documents\Visual Studio 2013\Projects\GSPMemFixTools\GSPMemFixTools\bin\Debug\Test"; 
             _vm.SimulateImport = true;
         }
