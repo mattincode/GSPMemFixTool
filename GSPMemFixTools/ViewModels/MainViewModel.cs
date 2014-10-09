@@ -186,7 +186,8 @@ namespace GSPMemFixTools.ViewModels
         private bool ReplaceImports(List<string> data)
         {
             var key = "[Import]";
-            var lineIndex = data.FindIndex(x => x.Contains(key));
+            var commentedKey = "//[Import]";
+            var lineIndex = data.FindIndex(x => x.Contains(key) && !x.Contains(commentedKey));
             if (lineIndex != -1)
             {
                 // Comment out thee import-row (to be able to keep track of all replacements)
@@ -194,14 +195,15 @@ namespace GSPMemFixTools.ViewModels
                 // Replace the next line with a GetInstance-Statement
                 lineIndex++;
                 var rowData = data[lineIndex];
-                var rowValues = rowData.Split(' ');
+                var rowValues = rowData.Split(' ', '\t');
                 var interfaceName = rowValues.FirstOrDefault(x => x.StartsWith("I") && x.EndsWith("Service"));
                 if (interfaceName != null)
-                {                                        
+                {
+                    Debug.WriteLine(String.Format("Interface: {0}", interfaceName));
                     var name = rowValues.FirstOrDefault(x => !x.StartsWith("I") && x.EndsWith("Service"));
                     if (name == null)
                         name = interfaceName.Substring(1); // Use interface name instead
-                    data[lineIndex] = String.Format("\t\tpublic {0} {1} {{ get {{ return ServiceLocator.Current.GetInstance<{2}>(); }} }}", interfaceName, name, interfaceName);  
+                    data[lineIndex] = String.Format("\t\tpublic {0} {1} {{ get {{ return ServiceLocator.Current.GetInstance<{2}>(); }} set; }}", interfaceName, name, interfaceName);  
                     _tempList.Add(String.Format("\tAdded: {0}", data[lineIndex]));
                     return true;
                 }
@@ -213,7 +215,8 @@ namespace GSPMemFixTools.ViewModels
             }
             else
                 return false;
-        }
+        }        
+
         #endregion
     }
 }

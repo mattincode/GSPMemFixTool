@@ -34,6 +34,18 @@ namespace Securitas.GSP.RiaClient.ViewModels
         [Import]
         public IEmployeeApprovalService EmployeeApprovalService { get; set; }
 
+        //[Import]
+        public IEmployeeApprovalService EmployeeApprovalService { get; set; }
+
+        [Import]
+        public IApprovalService ApprovalService { get; set; }
+
+        [Import]
+        public IAirportRequirementService AirportRequirementService { get; set; }
+        [Import]
+        public IAirportConfigurationService AirportConfigurationService { get; set; }
+
+
         public IActionCommand AddCommand { get; private set; }
         public IActionCommand DeleteCommand { get; private set; }
         public IActionCommand CommitCommand { get; private set; }
