@@ -203,7 +203,7 @@ namespace GSPMemFixTools.ViewModels
                     var name = rowValues.FirstOrDefault(x => !x.StartsWith("I") && x.EndsWith("Service"));
                     if (name == null)
                         name = interfaceName.Substring(1); // Use interface name instead
-                    data[lineIndex] = String.Format("\t\tpublic {0} {1} {{ get {{ return ServiceLocator.Current.GetInstance<{2}>(); }} set; }}", interfaceName, name, interfaceName);  
+                    data[lineIndex] = String.Format("\t\tpublic {0} {1} {{ get {{ return ServiceLocator.Current.GetInstance<{2}>(); }} }}", interfaceName, name, interfaceName);  
                     _tempList.Add(String.Format("\tAdded: {0}", data[lineIndex]));
                     return true;
                 }
