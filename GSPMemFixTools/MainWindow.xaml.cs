@@ -36,8 +36,10 @@ namespace GSPMemFixTools
             // 2. // _vm.RiaClientPath = @"C:\Source Control\TFS\Securitas GSP\MemLeak\Securitas.GSP.RiaClient.Framework"; 
             // 3. // _vm.RiaClientPath = @"C:\Source Control\TFS\Securitas GSP\MemLeak\Securitas.GSP.RiaClient.ViewModels"; 
             //_vm.RiaClientPath = @"C:\Source Control\TFS\Securitas GSP\MemLeak\Securitas.GSP.RiaClient.Services"; 
-            _vm.RiaClientPath = @"C:\Users\mandersson\Documents\GitHub\GSPMemFixTool\GSPMemFixTools\bin\Debug\Test"; 
+            //_vm.RiaClientPath = @"C:\Users\mandersson\Documents\GitHub\GSPMemFixTool\GSPMemFixTools\bin\Debug\TestExport"; 
+            _vm.RiaClientPath = @"C:\Users\Mathias\Documents\Visual Studio 2013\Projects\GSPMemFixTools\GSPMemFixTools\bin\Debug\TestExport"; 
             _vm.SimulateImport = true;
+            _vm.SimulateExport = true;
         }
 
         private void BrowseInterfaceFolderButton_Click(object sender, RoutedEventArgs e)

@@ -219,21 +219,59 @@ namespace GSPMemFixTools.ViewModels
 
         #endregion
 
+
+        #region Part 3
+        private ObservableCollection<string> _exportList = new ObservableCollection<string>();
+        private bool _simulateExport;
+
+        public bool SimulateExport
+        {
+            get { return _simulateExport; }
+            set
+            {
+                _simulateExport = value;
+                RaisePropertyChanged(() => SimulateExport);
+            }
+        }
+
+
+        public ObservableCollection<string> ExportList
+        {
+            get { return _exportList; }
+            set
+            {
+                _exportList = value;
+                RaisePropertyChanged(() => ExportList);
+            }
+        }
+
+        private int _numberOfExportUpdates;
+
+        public int NumberOfExportUpdates
+        {
+            get { return _numberOfExportUpdates; }
+            set
+            {
+                _numberOfExportUpdates = value;
+                RaisePropertyChanged(() => NumberOfExportUpdates);
+            }
+        }
+
         public void ReplaceExports()
         {
             if (_riaClientFolderOk)
             {
                 _tempList = new List<string>();
-                ImportList.Clear();
-                NumberOfUpdates = 0;
+                ExportList.Clear();
+                NumberOfExportUpdates = 0;
                 // Process *.cs                
                 var files = Directory.GetFiles(_riaClientPath, "*.cs", SearchOption.AllDirectories); // Directory.EnumerateFiles(_riaClientPath, "*.cs");
-                ProcessFilesForImport(files);
+                ProcessFilesForExports(files);
                 // Process *.xaml.cs
                 files = Directory.GetFiles(_riaClientPath, "*.xaml.cs", SearchOption.AllDirectories); //Directory.EnumerateFiles(_riaClientPath, "*.xaml.cs"); 
                 ProcessFilesForExports(files);
-                ImportList = new ObservableCollection<string>(_tempList);
-                NumberOfUpdates = _numberOfUpdates;
+                ExportList = new ObservableCollection<string>(_tempList);
+                NumberOfExportUpdates = _numberOfExportUpdates;
             }
         }
 
@@ -247,11 +285,11 @@ namespace GSPMemFixTools.ViewModels
                 while (ReplaceExports(content))
                 {
                     updatedRows++;
-                    _numberOfUpdates++;
+                    _numberOfExportUpdates++;
                 };
 
                 // Only write file if any rows has been updated
-                if (updatedRows > 0 && !SimulateImport)
+                if (updatedRows > 0 && !SimulateExport)
                 {
                     File.WriteAllLines(file, content.ToArray(), Encoding.UTF8);
                 }
@@ -260,49 +298,135 @@ namespace GSPMemFixTools.ViewModels
 
         private bool ReplaceExports(List<string> data)
         {
-            // Remove
-
-            //            [Export]
-            //public ViewModelRoute Binding
-            //{
-            //    get { return ViewModelRoute.Create(Constants.VIEWMODEL_PLANNINGUNIT, Constants.VIEW_PLANNINGUNIT); }
-            //}
-
-            // [ExportAsNamedView(Constants.VIEW_EMPLOYEE, Constants.VIEWMODEL_EMPLOYEE)]     
-
             var key = "[ExportAsView(";   // [ExportAsView(Constants.VIEW_PLANNINGUNIT, MenuName = "Planningunit detail")]
             var commentedKey = "//[ExportAsView(";
             var lineIndex = data.FindIndex(x => x.Contains(key) && !x.Contains(commentedKey));
             if (lineIndex != -1)
-            {
-                // Replace the export as with new attribute
-
-
-              //  data[lineIndex] = @"//TODO MemFix Step 2 - Removed import statement, this comment can be removed after review";
-                // Replace the next line with a GetInstance-Statement
-                //lineIndex++;
-                var rowData = data[lineIndex];
-                var rowValues = rowData.Split(' ', '\t');
-                var interfaceName = rowValues.FirstOrDefault(x => x.StartsWith("I") && x.EndsWith("Service"));
-                if (interfaceName != null)
+            {                
+                var viewModelName = FindViewModelFromBinding(data);
+                var viewName = FindViewNameFromExport(data);
+                if (viewModelName.Length > 0 && viewName.Length > 0)
                 {
-                    Debug.WriteLine(String.Format("Interface: {0}", interfaceName));
-                    var name = rowValues.FirstOrDefault(x => !x.StartsWith("I") && x.EndsWith("Service"));
-                    if (name == null)
-                        name = interfaceName.Substring(1); // Use interface name instead
-                    data[lineIndex] = String.Format("\t\tpublic {0} {1} {{ get {{ return ServiceLocator.Current.GetInstance<{2}>(); }} }}", interfaceName, name, interfaceName);
+                    // Replace the export with new attribute
+                    data[lineIndex] = String.Format("\t\t[ExportAsNamedView({0}, {1})]", viewName, viewModelName);
                     _tempList.Add(String.Format("\tAdded: {0}", data[lineIndex]));
+                    // Remove the old export bindingstatement
+                    RemoveExportStatement(data);
                     return true;
                 }
                 else
                 {
-                    Debug.Assert(interfaceName == null);
+                    Debug.Assert(viewModelName.Length > 0);
                     return false;
                 }
             }
             else
-                return false;
-        } 
+                return false;   // No export found!
+        }
+
+        /// <summary>
+        /// Find viewmodel name from Export binding
+        /// get { return ViewModelRoute.Create(Constants.VIEWMODEL_PLANNINGUNIT, Constants.VIEW_PLANNINGUNIT); }
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        private string FindViewModelFromBinding(List<string> data)
+        {
+            var viewModelName = "";
+            string keyToFind = "[Export]";
+            var commentedKey = "//[Export]";
+            var lineIndex = data.FindIndex(x => x.Contains(keyToFind) && !x.Contains(commentedKey));
+            if (lineIndex != NotFound)
+            {
+                var bindingStatement = ".Create(";
+                var bindingStatementPos = data.FindIndex(lineIndex, x => x.Contains(bindingStatement));
+                if (bindingStatementPos != NotFound)
+                {
+                    var pos = data[bindingStatementPos].IndexOf(bindingStatement);                    
+                    if (pos > 0)
+                    {                        
+                        var startPos = pos + bindingStatement.Length;
+                        var commaPos = data[bindingStatementPos].IndexOf(',');
+                        var length = commaPos - startPos;
+                        if (length > 0)
+                        {
+                            viewModelName = data[bindingStatementPos].Substring(startPos, length);
+                        }
+                    }
+                }
+                
+            }
+            return viewModelName;
+        }
+
+        // [ExportAsNamedView(Constants.VIEW_EMPLOYEE, Constants.VIEWMODEL_EMPLOYEE)] 
+        // replaces
+        // [ExportAsView(Constants.VIEW_EMPLOYEE, MenuName = "Planningunit detail")]
+        private string FindViewNameFromExport(List<string> data)
+        {
+            string viewName = "";
+            var key = "[ExportAsView(";   
+            var commentedKey = "//[ExportAsView(";
+            var lineIndex = data.FindIndex(x => x.Contains(key) && !x.Contains(commentedKey));
+            if (lineIndex != NotFound)
+            {
+                var firstParenthesisPos = data[lineIndex].IndexOf('(');
+                var commmaPos = data[lineIndex].IndexOf(','); 
+                var length = commmaPos - firstParenthesisPos - 1;
+                if (length > 0)
+                {
+                    viewName = data[lineIndex].Substring(firstParenthesisPos + 1, length);
+                }
+
+            }
+            return viewName;
+        }
+
+
+        private const int NotFound = -1;
+        private void RemoveExportStatement(List<string> data)
+        {
+            string keyToFind = "[Export]";
+            var commentedKey = "//[Export]";
+            var lineIndex = data.FindIndex(x => x.Contains(keyToFind) && !x.Contains(commentedKey));
+            if (lineIndex != NotFound)
+            {                
+                RemoveCodeBlock(data, lineIndex + 2);
+                data.RemoveAt(lineIndex + 1);   // Remove the code block presequel
+                data.RemoveAt(lineIndex);       // Remove the export statement
+            }
+        }
+
+        /// <summary>
+        /// Removes a block of code starting with "{" and ending with "}"
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="blockStartPos"></param>
+        private void RemoveCodeBlock(List<string> data, int blockStartPos)
+        {            
+            var length = data.Count();
+            int pos = blockStartPos;
+            // Verify that we indeed have a start block
+            if (data[pos].Contains('{'))
+            {
+                while(pos < length && (!data[pos].Contains('}') || data[pos].Contains('{')))
+                {
+                    pos++;
+                }
+                pos++; // Add one since we want to remove the row we are positioned on as well
+
+                // Remove block
+                if (pos != length)
+                {
+                    var rowsToRemove = pos - blockStartPos; 
+                    for (int i = 0; i < rowsToRemove; i++)
+                    {
+                        data.RemoveAt(blockStartPos);
+                    }
+                }
+            }
+        }
+        #endregion
 
     }
 }
