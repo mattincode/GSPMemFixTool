@@ -310,10 +310,13 @@ namespace GSPMemFixTools.ViewModels
                 if (viewModelName.Length > 0 && viewName.Length > 0)
                 {
                     // Replace the export with new attribute
-                    data[lineIndex] = String.Format("\t\t[ExportAsNamedView({0}, {1})]", viewName, viewModelName);
+                    data[lineIndex] = String.Format("\t[ExportAsNamedView({0}, {1})]", viewName, viewModelName);
                     _tempList.Add(String.Format("\tAdded: {0}", data[lineIndex]));
                     // Remove the old export bindingstatement
                     RemoveExportStatement(data);
+                    // Add using statement for new attribute                    
+                    data.Insert(0, "using Securitas.GSP.RiaClient.Framework.Messaging;");
+                    RemoveJounceUsingsStatements(data);
                     return true;
                 }
                 else
@@ -326,6 +329,21 @@ namespace GSPMemFixTools.ViewModels
             }
             else
                 return false;   // No export found!
+        }
+
+        private void RemoveJounceUsingsStatements(List<string> data)
+        {
+            RemoveRowFromKey(data, @"using Jounce.Core.View");
+            RemoveRowFromKey(data, @"using Jounce.Core.ViewModel");
+        }
+
+        private void RemoveRowFromKey(List<string> data, string keyToFind)
+        {
+            var lineIndex = data.FindIndex(x => x.Contains(keyToFind));
+            if (lineIndex != NotFound)
+            {
+                data.RemoveAt(lineIndex);
+            }
         }
 
         /// <summary>
