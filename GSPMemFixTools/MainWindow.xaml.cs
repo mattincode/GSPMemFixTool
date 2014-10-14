@@ -31,10 +31,12 @@ namespace GSPMemFixTools
             InitializeComponent();
             DataContext = _vm;
             // Init using my local folders for convenience
-            _vm.InterfacePath = @"D:\Stratiteq\TFS\Securitas GSP\MemLeak\Securitas.GSP.RiaClient.Contracts";
-            _vm.RiaClientPath = @"D:\Stratiteq\TFS\Securitas GSP\MemLeak\Securitas.GSP.RiaClient";
-            _vm.RiaClientPath = @"D:\Stratiteq\TFS\Securitas GSP\MemLeak\Securitas.GSP.RiaClient.Framework"; 
-            //_vm.RiaClientPath = @"C:\Users\Mathias\Documents\Visual Studio 2013\Projects\GSPMemFixTools\GSPMemFixTools\bin\Debug\Test"; 
+            _vm.InterfacePath = @"C:\Source Control\TFS\Securitas GSP\MemLeak\Securitas.GSP.RiaClient.Contracts";
+            // 1. // _vm.RiaClientPath = @"C:\Source Control\TFS\Securitas GSP\MemLeak\Securitas.GSP.RiaClient";
+            // 2. // _vm.RiaClientPath = @"C:\Source Control\TFS\Securitas GSP\MemLeak\Securitas.GSP.RiaClient.Framework"; 
+            // 3. // _vm.RiaClientPath = @"C:\Source Control\TFS\Securitas GSP\MemLeak\Securitas.GSP.RiaClient.ViewModels"; 
+            //_vm.RiaClientPath = @"C:\Source Control\TFS\Securitas GSP\MemLeak\Securitas.GSP.RiaClient.Services"; 
+            _vm.RiaClientPath = @"C:\Users\mandersson\Documents\GitHub\GSPMemFixTool\GSPMemFixTools\bin\Debug\Test"; 
             _vm.SimulateImport = true;
         }
 
@@ -74,5 +76,10 @@ namespace GSPMemFixTools
             return value;
         }
         #endregion Utilities
+
+        private void ReplaceExportButton_Click(object sender, RoutedEventArgs e)
+        {
+            _vm.ReplaceExports();    
+        }
     }
 }

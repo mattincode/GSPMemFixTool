@@ -1,55 +1,159 @@
 ﻿<Window x:Class="GSPMemFixTools.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="MainWindow" Height="350" Width="700">
+        Title="MainWindow"
+        Width="700"
+        Height="350">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-    
-        <!--Step 1 : Create IOC for app.xaml.cs-->
-        <Grid Grid.Row ="0">
+
+        <!--  Step 1 : Create IOC for app.xaml.cs  -->
+        <Grid Grid.Row="0">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width ="Auto"/>
-                <ColumnDefinition Width ="Auto" />
-                <ColumnDefinition Width ="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" FontSize="12" FontWeight="Bold"  Text="1. Create IOC for app.xaml.cs" Margin="5,5,0,10"/>            
-            <TextBlock Grid.Row="1" Grid.Column="0"  Text="{Binding InterfacePath}" Margin="5,0,5,5"/>
-            <Button x:Name="BrowseInterfaceFolderButton"  Grid.Row="1" Grid.Column="1"  Content="..." Click="BrowseInterfaceFolderButton_Click" Margin="0,5,5,5" Width="20"/>
-            <Button x:Name="ReadServiceInterfacesButton" IsEnabled="{Binding InterfaceFolderOK}"  Grid.Row="1" Grid.Column="2" Content="Read Service Interfaces" Click="ReadServiceInterfacesButton_Click" Width="160" HorizontalAlignment="Left" Margin="0,0,5,0"/>
-            <ListBox Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"  ItemsSource="{Binding InterfaceList}" Margin="5"/>
+            <TextBlock Grid.Row="0"
+                       Grid.Column="0"
+                       Grid.ColumnSpan="3"
+                       Margin="5,5,0,10"
+                       FontSize="12"
+                       FontWeight="Bold"
+                       Text="1. Create IOC for app.xaml.cs" />
+            <TextBlock Grid.Row="1"
+                       Grid.Column="0"
+                       Margin="5,0,5,5"
+                       Text="{Binding InterfacePath}" />
+            <Button x:Name="BrowseInterfaceFolderButton"
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    Width="20"
+                    Margin="0,5,5,5"
+                    Click="BrowseInterfaceFolderButton_Click"
+                    Content="..." />
+            <Button x:Name="ReadServiceInterfacesButton"
+                    Grid.Row="1"
+                    Grid.Column="2"
+                    Width="160"
+                    Margin="0,0,5,0"
+                    HorizontalAlignment="Left"
+                    Click="ReadServiceInterfacesButton_Click"
+                    Content="Read Service Interfaces"
+                    IsEnabled="{Binding InterfaceFolderOK}" />
+            <ListBox Grid.Row="2"
+                     Grid.Column="0"
+                     Grid.ColumnSpan="3"
+                     Margin="5"
+                     ItemsSource="{Binding InterfaceList}" />
         </Grid>
 
-        <!--Step 2 : Search and replace importstatements -->
+        <!--  Step 2 : Search and replace importstatements  -->
         <Grid Grid.Row="1">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width ="Auto"/>
-                <ColumnDefinition Width ="Auto" />
-                <ColumnDefinition Width ="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" FontSize="12" FontWeight="Bold"  Text="2. Search and replace importstatements" Margin="5,5,0,10"/>
-            <TextBlock Grid.Row="1" Grid.Column="0"  Text="{Binding RiaClientPath}" Margin="5,0,5,5"/>
-            <Button x:Name="BrowseRiaClientFolderButton"  Grid.Row="1" Grid.Column="1"  Content="..." Click="BrowseRiaClientFolderButton_Click" Margin="0,5,5,5" Width="20"/>
-            <StackPanel Grid.Row="1" Grid.Column="2" Margin="0,0,5,0" Orientation="Horizontal">
-                <CheckBox IsChecked="{Binding SimulateImport, Mode=TwoWay}"  Content="Simulate" />
-                <Button x:Name="ReplaceImportButton" IsEnabled="{Binding RiaClientFolderOK}"   Content="Replace imports" Click="ReplaceImportButton_Click" Width="160" HorizontalAlignment="Left" />
-                <TextBlock Text="{Binding NumberOfUpdates}"/>
+            <TextBlock Grid.Row="0"
+                       Grid.Column="0"
+                       Grid.ColumnSpan="3"
+                       Margin="5,5,0,10"
+                       FontSize="12"
+                       FontWeight="Bold"
+                       Text="2. Search and replace importstatements" />
+            <TextBlock Grid.Row="1"
+                       Grid.Column="0"
+                       Margin="5,0,5,5"
+                       Text="{Binding RiaClientPath}" />
+            <Button x:Name="BrowseRiaClientFolderButton"
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    Width="20"
+                    Margin="0,5,5,5"
+                    Click="BrowseRiaClientFolderButton_Click"
+                    Content="..." />
+            <StackPanel Grid.Row="1"
+                        Grid.Column="2"
+                        Margin="0,0,5,0"
+                        Orientation="Horizontal">
+                <CheckBox Content="Simulate" IsChecked="{Binding SimulateImport, Mode=TwoWay}" />
+                <Button x:Name="ReplaceImportButton"
+                        Width="160"
+                        HorizontalAlignment="Left"
+                        Click="ReplaceImportButton_Click"
+                        Content="Replace imports"
+                        IsEnabled="{Binding RiaClientFolderOK}" />
+                <TextBlock Text="{Binding NumberOfUpdates}" />
             </StackPanel>
-            <ListBox Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"  ItemsSource="{Binding ImportList}" Margin="5" VerticalAlignment="Stretch"/>
+            <ListBox Grid.Row="2"
+                     Grid.Column="0"
+                     Grid.ColumnSpan="3"
+                     Margin="5"
+                     VerticalAlignment="Stretch"
+                     ItemsSource="{Binding ImportList}" />
+        </Grid>
+
+        <!--  Step 3 : Search and replace ExportAsView  -->
+        <Grid Grid.Row="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Row="0"
+                       Grid.Column="0"
+                       Grid.ColumnSpan="3"
+                       Margin="5,5,0,10"
+                       FontSize="12"
+                       FontWeight="Bold"
+                       Text="2. Search and replace importstatements" />
+            <TextBlock Grid.Row="1"
+                       Grid.Column="0"
+                       Margin="5,0,5,5"
+                       Text="{Binding RiaClientPath}" />
+            <!--  <Button x:Name="BrowseRiaClientFolderButton"  Grid.Row="1" Grid.Column="1"  Content="..." Click="BrowseRiaClientFolderButton_Click" Margin="0,5,5,5" Width="20"/>  -->
+            <StackPanel Grid.Row="1"
+                        Grid.Column="2"
+                        Margin="0,0,5,0"
+                        Orientation="Horizontal">
+                <CheckBox Content="Simulate" IsChecked="{Binding SimulateImport, Mode=TwoWay}" />
+                <Button x:Name="ReplaceExportButton"
+                        Width="160"
+                        HorizontalAlignment="Left"
+                        Click="ReplaceExportButton_Click"
+                        Content="Replace expoorts"
+                        IsEnabled="{Binding RiaClientFolderOK}" />
+                <TextBlock Text="{Binding NumberOfUpdates}" />
+            </StackPanel>
+            <ListBox Grid.Row="2"
+                     Grid.Column="0"
+                     Grid.ColumnSpan="3"
+                     Margin="5"
+                     VerticalAlignment="Stretch"
+                     ItemsSource="{Binding ImportList}" />
         </Grid>
     </Grid>
 </Window>

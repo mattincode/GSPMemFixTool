@@ -199,7 +199,7 @@ namespace GSPMemFixTools.ViewModels
                 var interfaceName = rowValues.FirstOrDefault(x => x.StartsWith("I") && x.EndsWith("Service"));
                 if (interfaceName != null)
                 {
-                    Debug.WriteLine(String.Format("Interface: {0}", interfaceName));
+                    Debug.WriteLine(String.Format("Interface: {0}", interfaceName));                       
                     var name = rowValues.FirstOrDefault(x => !x.StartsWith("I") && x.EndsWith("Service"));
                     if (name == null)
                         name = interfaceName.Substring(1); // Use interface name instead
@@ -218,5 +218,91 @@ namespace GSPMemFixTools.ViewModels
         }        
 
         #endregion
+
+        public void ReplaceExports()
+        {
+            if (_riaClientFolderOk)
+            {
+                _tempList = new List<string>();
+                ImportList.Clear();
+                NumberOfUpdates = 0;
+                // Process *.cs                
+                var files = Directory.GetFiles(_riaClientPath, "*.cs", SearchOption.AllDirectories); // Directory.EnumerateFiles(_riaClientPath, "*.cs");
+                ProcessFilesForImport(files);
+                // Process *.xaml.cs
+                files = Directory.GetFiles(_riaClientPath, "*.xaml.cs", SearchOption.AllDirectories); //Directory.EnumerateFiles(_riaClientPath, "*.xaml.cs"); 
+                ProcessFilesForExports(files);
+                ImportList = new ObservableCollection<string>(_tempList);
+                NumberOfUpdates = _numberOfUpdates;
+            }
+        }
+
+        private void ProcessFilesForExports(IEnumerable<string> files)
+        {
+            foreach (var file in files)
+            {
+                _tempList.Add(String.Format("Processing {0}", file));
+                var content = File.ReadAllLines(file).ToList();
+                var updatedRows = 0;
+                while (ReplaceExports(content))
+                {
+                    updatedRows++;
+                    _numberOfUpdates++;
+                };
+
+                // Only write file if any rows has been updated
+                if (updatedRows > 0 && !SimulateImport)
+                {
+                    File.WriteAllLines(file, content.ToArray(), Encoding.UTF8);
+                }
+            }
+        }
+
+        private bool ReplaceExports(List<string> data)
+        {
+            // Remove
+
+            //            [Export]
+            //public ViewModelRoute Binding
+            //{
+            //    get { return ViewModelRoute.Create(Constants.VIEWMODEL_PLANNINGUNIT, Constants.VIEW_PLANNINGUNIT); }
+            //}
+
+            // [ExportAsNamedView(Constants.VIEW_EMPLOYEE, Constants.VIEWMODEL_EMPLOYEE)]     
+
+            var key = "[ExportAsView(";   // [ExportAsView(Constants.VIEW_PLANNINGUNIT, MenuName = "Planningunit detail")]
+            var commentedKey = "//[ExportAsView(";
+            var lineIndex = data.FindIndex(x => x.Contains(key) && !x.Contains(commentedKey));
+            if (lineIndex != -1)
+            {
+                // Replace the export as with new attribute
+
+
+              //  data[lineIndex] = @"//TODO MemFix Step 2 - Removed import statement, this comment can be removed after review";
+                // Replace the next line with a GetInstance-Statement
+                //lineIndex++;
+                var rowData = data[lineIndex];
+                var rowValues = rowData.Split(' ', '\t');
+                var interfaceName = rowValues.FirstOrDefault(x => x.StartsWith("I") && x.EndsWith("Service"));
+                if (interfaceName != null)
+                {
+                    Debug.WriteLine(String.Format("Interface: {0}", interfaceName));
+                    var name = rowValues.FirstOrDefault(x => !x.StartsWith("I") && x.EndsWith("Service"));
+                    if (name == null)
+                        name = interfaceName.Substring(1); // Use interface name instead
+                    data[lineIndex] = String.Format("\t\tpublic {0} {1} {{ get {{ return ServiceLocator.Current.GetInstance<{2}>(); }} }}", interfaceName, name, interfaceName);
+                    _tempList.Add(String.Format("\tAdded: {0}", data[lineIndex]));
+                    return true;
+                }
+                else
+                {
+                    Debug.Assert(interfaceName == null);
+                    return false;
+                }
+            }
+            else
+                return false;
+        } 
+
     }
 }
