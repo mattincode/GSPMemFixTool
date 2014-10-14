@@ -13,6 +13,7 @@ namespace GSPMemFixTools.ViewModels
     public class MainViewModel : BaseViewModel
     {
 
+        #region Part 1
         private bool _interfaceFolderOk;
         private ObservableCollection<string> _interfaceList = new ObservableCollection<string>();
         private string _InterfacePath;
@@ -70,6 +71,7 @@ namespace GSPMemFixTools.ViewModels
             }
 
         }
+        #endregion Part 1
 
         #region Part 2
 
@@ -316,7 +318,9 @@ namespace GSPMemFixTools.ViewModels
                 }
                 else
                 {
-                    Debug.Assert(viewModelName.Length > 0);
+                    _tempList.Add(String.Format("\t# NOT Added: {0}", data[lineIndex]));
+                    Debug.WriteLine(String.Format("\t# NOT Added: {0}", data[lineIndex]));
+//                    Debug.Assert(viewModelName.Length > 0);
                     return false;
                 }
             }
@@ -371,8 +375,12 @@ namespace GSPMemFixTools.ViewModels
             if (lineIndex != NotFound)
             {
                 var firstParenthesisPos = data[lineIndex].IndexOf('(');
-                var commmaPos = data[lineIndex].IndexOf(','); 
-                var length = commmaPos - firstParenthesisPos - 1;
+                var endPos = data[lineIndex].IndexOf(',', firstParenthesisPos);
+                if (endPos == NotFound)
+                {
+                    endPos = data[lineIndex].IndexOf(')', firstParenthesisPos);
+                }
+                var length = endPos - firstParenthesisPos - 1;
                 if (length > 0)
                 {
                     viewName = data[lineIndex].Substring(firstParenthesisPos + 1, length);
