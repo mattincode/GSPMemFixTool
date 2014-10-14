@@ -221,7 +221,6 @@ namespace GSPMemFixTools.ViewModels
 
         #endregion
 
-
         #region Part 3
         private ObservableCollection<string> _exportList = new ObservableCollection<string>();
         private bool _simulateExport;
@@ -453,6 +452,137 @@ namespace GSPMemFixTools.ViewModels
             }
         }
         #endregion
+
+        #region Part 4
+        private ObservableCollection<string> _exportVmList = new ObservableCollection<string>();
+        private bool _simulateVmExport;
+
+        public bool SimulateVmExport
+        {
+            get { return _simulateVmExport; }
+            set
+            {
+                _simulateVmExport = value;
+                RaisePropertyChanged(() => SimulateVmExport);
+            }
+        }
+
+
+        public ObservableCollection<string> ExportVmList
+        {
+            get { return _exportVmList; }
+            set
+            {
+                _exportVmList = value;
+                RaisePropertyChanged(() => ExportVmList);
+            }
+        }
+
+        private int _numberOfVmExportUpdates;
+
+        public int NumberOfVmExportUpdates
+        {
+            get { return _numberOfVmExportUpdates; }
+            set
+            {
+                _numberOfVmExportUpdates = value;
+                RaisePropertyChanged(() => NumberOfVmExportUpdates);
+            }
+        }        
+
+        public void ReplaceVmExports()
+        {
+            if (_riaClientFolderOk)
+            {
+                _tempList = new List<string>();
+                ExportVmList.Clear();
+                NumberOfVmExportUpdates = 0;
+                // Process *.cs                
+                var files = Directory.GetFiles(_riaClientPath, "*.cs", SearchOption.AllDirectories); // Directory.EnumerateFiles(_riaClientPath, "*.cs");
+                ProcessFilesForVmExports(files);
+                ExportVmList = new ObservableCollection<string>(_tempList);
+                NumberOfVmExportUpdates = _numberOfVmExportUpdates;
+            }
+        }
+
+        private void ProcessFilesForVmExports(IEnumerable<string> files)
+        {
+            foreach (var file in files)
+            {
+                _tempList.Add(String.Format("Processing {0}", file));
+                var content = File.ReadAllLines(file).ToList();
+                var updatedRows = 0;
+                while (ReplaceVmExports(content))
+                {
+                    updatedRows++;
+                    _numberOfVmExportUpdates++;
+                };
+
+                // Only write file if any rows has been updated
+                if (updatedRows > 0 && !SimulateVmExport)
+                {
+                    File.WriteAllLines(file, content.ToArray(), Encoding.UTF8);
+                }
+            }
+        }
+
+        private bool ReplaceVmExports(List<string> data)
+        {
+            var key = "[ExportAsViewModel(";  
+            var commentedKey = "//[ExportAsViewModel(";
+            var lineIndex = data.FindIndex(x => x.Contains(key) && !x.Contains(commentedKey));
+            if (lineIndex != -1)
+            {
+                var viewModelName = FindViewNameFromVmExport(data);                
+                if (viewModelName.Length > 0)
+                {
+                    // Replace the export with new attribute
+                    data[lineIndex] = String.Format("\t[ExportAsNamedViewModel({0})]", viewModelName);
+                    _tempList.Add(String.Format("\tAdded: {0}", data[lineIndex]));
+                    // Add using statement for new attribute                    
+                    data.Insert(0, "using Securitas.GSP.RiaClient.Framework.Messaging;");
+                    RemoveRowFromKey(data, @"using Jounce.Core.ViewModel");
+                    return true;
+                }
+                else
+                {
+                    _tempList.Add(String.Format("\t# NOT Added: {0}", data[lineIndex]));
+                    Debug.WriteLine(String.Format("\t# NOT Added: {0}", data[lineIndex]));
+                    //                    Debug.Assert(viewModelName.Length > 0);
+                    return false;
+                }
+            }
+            else
+                return false;   // No export found!
+        }
+
+        // [ExportAsNamedView(Constants.VIEW_EMPLOYEE, Constants.VIEWMODEL_EMPLOYEE)] 
+        // replaces
+        // [ExportAsView(Constants.VIEW_EMPLOYEE, MenuName = "Planningunit detail")]
+        private string FindViewNameFromVmExport(List<string> data)
+        {
+            string viewName = "";
+            var key = "[ExportAsViewModel(";
+            var commentedKey = "//[ExportAsViewModel(";
+            var lineIndex = data.FindIndex(x => x.Contains(key) && !x.Contains(commentedKey));
+            if (lineIndex != NotFound)
+            {
+                var firstParenthesisPos = data[lineIndex].IndexOf('(');
+                var endPos = data[lineIndex].IndexOf(',', firstParenthesisPos);
+                if (endPos == NotFound)
+                {
+                    endPos = data[lineIndex].IndexOf(')', firstParenthesisPos);
+                }
+                var length = endPos - firstParenthesisPos - 1;
+                if (length > 0)
+                {
+                    viewName = data[lineIndex].Substring(firstParenthesisPos + 1, length);
+                }
+
+            }
+            return viewName;
+        }
+        #endregion Part 4
 
     }
 }

@@ -8,6 +8,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
@@ -144,7 +145,7 @@
                         Width="160"
                         HorizontalAlignment="Left"
                         Click="ReplaceExportButton_Click"
-                        Content="Replace expoorts"
+                        Content="Replace exports"
                         IsEnabled="{Binding RiaClientFolderOK}" />
                 <TextBlock Text="{Binding NumberOfExportUpdates}" />
             </StackPanel>
@@ -154,6 +155,52 @@
                      Margin="5"
                      VerticalAlignment="Stretch"
                      ItemsSource="{Binding ExportList}" />
+        </Grid>
+
+        <!--  Step 4 : Replace Export-aatribute in viewmodels  -->
+        <Grid Grid.Row="3">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Row="0"
+                       Grid.Column="0"
+                       Grid.ColumnSpan="3"
+                       Margin="5,5,0,10"
+                       FontSize="12"
+                       FontWeight="Bold"
+                       Text="4. Search and replace export for viewmodels" />
+            <TextBlock Grid.Row="1"
+                       Grid.Column="0"
+                       Margin="5,0,5,5"
+                       Text="{Binding RiaClientPath}" />
+            <!--  <Button x:Name="BrowseRiaClientFolderButton"  Grid.Row="1" Grid.Column="1"  Content="..." Click="BrowseRiaClientFolderButton_Click" Margin="0,5,5,5" Width="20"/>  -->
+            <StackPanel Grid.Row="1"
+                        Grid.Column="2"
+                        Margin="0,0,5,0"
+                        Orientation="Horizontal">
+                <CheckBox Content="Simulate" IsChecked="{Binding SimulateVmExport, Mode=TwoWay}" />
+                <Button x:Name="ReplaceVmExportButton"
+                        Width="160"
+                        HorizontalAlignment="Left"
+                        Click="ReplaceVmExportButton_Click"
+                        Content="Replace viewmodel exports"
+                        IsEnabled="{Binding RiaClientFolderOK}" />
+                <TextBlock Text="{Binding NumberOfVmExportUpdates}" />
+            </StackPanel>
+            <ListBox Grid.Row="2"
+                     Grid.Column="0"
+                     Grid.ColumnSpan="3"
+                     Margin="5"
+                     VerticalAlignment="Stretch"
+                     ItemsSource="{Binding ExportVmList}" />
         </Grid>
     </Grid>
 </Window>

@@ -43,10 +43,13 @@ namespace GSPMemFixTools
             //_vm.RiaClientPath = @"C:\Users\mandersson\Documents\GitHub\GSPMemFixTool\GSPMemFixTools\bin\Debug\TestExport"; 
         // Step 3 - Exports  
             //_vm.RiaClientPath = @"C:\Users\Mathias\Documents\Visual Studio 2013\Projects\GSPMemFixTools\GSPMemFixTools\bin\Debug\TestExport"; 
+            //_vm.RiaClientPath = @"D:\Stratiteq\TFS\Securitas GSP\MemLeak\Securitas.GSP.RiaClient"; 
+        // Step 4 - VM Exports
+            //_vm.RiaClientPath = @"C:\Users\Mathias\Documents\Visual Studio 2013\Projects\GSPMemFixTools\GSPMemFixTools\bin\Debug\TestVmExport"; 
             _vm.RiaClientPath = @"D:\Stratiteq\TFS\Securitas GSP\MemLeak\Securitas.GSP.RiaClient"; 
-
             _vm.SimulateImport = true;
             _vm.SimulateExport = true;
+            _vm.SimulateVmExport = true;
         }
 
         private void BrowseInterfaceFolderButton_Click(object sender, RoutedEventArgs e)
@@ -89,6 +92,11 @@ namespace GSPMemFixTools
         private void ReplaceExportButton_Click(object sender, RoutedEventArgs e)
         {
             _vm.ReplaceExports();    
+        }
+
+        private void ReplaceVmExportButton_Click(object sender, RoutedEventArgs e)
+        {
+            _vm.ReplaceVmExports(); 
         }
     }
 }
