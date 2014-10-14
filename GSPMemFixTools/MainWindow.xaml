@@ -129,7 +129,7 @@
                        Margin="5,5,0,10"
                        FontSize="12"
                        FontWeight="Bold"
-                       Text="2. Search and replace importstatements" />
+                       Text="3. Search and replace exports and binding statements" />
             <TextBlock Grid.Row="1"
                        Grid.Column="0"
                        Margin="5,0,5,5"
